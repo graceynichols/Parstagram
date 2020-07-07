@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.app.ActionBar;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -18,7 +20,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
-    private static int lastPage = 0;
+    private static MenuItem lastPage;
     final FragmentManager fragmentManager = getSupportFragmentManager();
     private BottomNavigationView bottomNavigationView;
 
@@ -27,6 +29,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Put instagram photo on the actionbar
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        this.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.white)));
+        //this.getSupportActionBar().set
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.actionbar);
 
 
         bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -40,7 +49,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 Fragment fragment;
-                unfill(menuItem, lastPage);
+                if (lastPage != null) {
+                    unfill(lastPage);
+                }
+                lastPage = menuItem;
                 switch (menuItem.getItemId()) {
                     // Unfill the last page
                     // Go to the fragment they selected and fill in icon
@@ -69,27 +81,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private static void unfill(@NonNull MenuItem menuItem, int lastPage) {
-        if (lastPage != 0) {
-            // There was a previous page selected
-            switch (lastPage) {
-                // Unfill the last page
-                // Go to the fragment they selected and fill in icon
-                case R.id.action_settings:
-                    break;
-                case R.id.action_home:
-                    menuItem.setIcon(R.drawable.instagram_home_outline_24);
-                    break;
-                case R.id.action_compose:
-                    menuItem.setIcon(R.drawable.instagram_new_post_outline_24);
-                    break;
-                case R.id.action_profile:
-                    menuItem.setIcon(R.drawable.instagram_user_outline_24);
-                    break;
-                default:
-                    break;
-            }
-
+    private static void unfill(@NonNull MenuItem menuItem) {
+        // There was a previous page selected
+        switch (lastPage.getItemId()) {
+            // Unfill the last page
+            // Go to the fragment they selected and fill in icon
+            case R.id.action_settings:
+                break;
+            case R.id.action_home:
+                menuItem.setIcon(R.drawable.instagram_home_outline_24);
+                break;
+            case R.id.action_compose:
+                menuItem.setIcon(R.drawable.instagram_new_post_outline_24);
+                break;
+            case R.id.action_profile:
+                menuItem.setIcon(R.drawable.instagram_user_outline_24);
+                break;
+            default:
+                break;
         }
+
     }
 }
