@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.parstagram.activity.PostDetailsActivity;
 import com.parse.ParseFile;
 
 import org.parceler.Parcels;
@@ -59,7 +60,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     // Launch DetailsActivity
                     Intent intent = new Intent(context, PostDetailsActivity.class);
                     // Serialize the tweet using parceler
-                    intent.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
+                    intent.putExtra("username", post.getUser().getUsername());
+                    intent.putExtra("description", post.getDescription());
+                    intent.putExtra("createdAt", post.getCreatedAt());
+                    intent.putExtra("image", post.getImage().getUrl());
                     //context.startActivity(intent);
                     context.startActivity(intent);
                 }

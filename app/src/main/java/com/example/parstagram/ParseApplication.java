@@ -5,9 +5,12 @@ import android.app.Application;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import org.parceler.Parcel;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+@Parcel
 public class ParseApplication extends Application {
     @Override
     public void onCreate() {

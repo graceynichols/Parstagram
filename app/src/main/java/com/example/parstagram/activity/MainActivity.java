@@ -50,7 +50,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         bottomNavigationView = findViewById(R.id.bottomNavigation);
+        initializeBottomNavigationView(bottomNavigationView, fragmentManager);
 
+        bottomNavigationView.setSelectedItemId(R.id.action_home);
+    }
+
+    public static void initializeBottomNavigationView(BottomNavigationView bottomNavigationView, final FragmentManager fManager) {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -70,13 +75,12 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     default:
                         fragment = new PostsFragment();
-                         break;
+                        break;
                 }
-                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                fManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
                 return true;
             }
         });
-        bottomNavigationView.setSelectedItemId(R.id.action_home);
     }
 
 
