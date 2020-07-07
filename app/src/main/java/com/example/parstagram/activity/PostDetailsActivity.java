@@ -19,7 +19,7 @@ public class PostDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "PostDetailsActivity";
     private static ActivityPostDetailsBinding binding;
-    final FragmentManager fragmentManager = getSupportFragmentManager();
+    //final FragmentManager fragmentManager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public class PostDetailsActivity extends AppCompatActivity {
         binding.tvDescription.setText(intent.getStringExtra("description"));
         binding.tvUsername.setText(intent.getStringExtra("username"));
         Glide.with(this).load(intent.getStringExtra("image")).into(binding.imageView);
-        MainActivity.initializeBottomNavigationView(binding.bottomNavigation, fragmentManager);
+        //MainActivity.initializeBottomNavigationView(binding.bottomNavigation, fragmentManager);
 
     }
 }

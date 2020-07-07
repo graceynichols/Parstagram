@@ -2,43 +2,23 @@ package com.example.parstagram.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.example.parstagram.R;
 import com.example.parstagram.fragments.ComposeFragment;
 import com.example.parstagram.fragments.PostsFragment;
 import com.example.parstagram.fragments.ProfileFragment;
+import com.example.parstagram.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
-
-import java.io.File;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
+    private static int lastPage = 0;
     final FragmentManager fragmentManager = getSupportFragmentManager();
     private BottomNavigationView bottomNavigationView;
 
@@ -55,22 +35,28 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.action_home);
     }
 
-    public static void initializeBottomNavigationView(BottomNavigationView bottomNavigationView, final FragmentManager fManager) {
+    public static void initializeBottomNavigationView(final BottomNavigationView bottomNavigationView, final FragmentManager fManager) {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 Fragment fragment;
+                unfill(menuItem, lastPage);
                 switch (menuItem.getItemId()) {
+                    // Unfill the last page
+                    // Go to the fragment they selected and fill in icon
+                    case R.id.action_settings:
+                        fragment = new SettingsFragment();
+                        break;
                     case R.id.action_home:
-                        // do something here
+                        menuItem.setIcon(R.drawable.instagram_home_filled_24);
                         fragment = new PostsFragment();
                         break;
                     case R.id.action_compose:
-                        // do something here
+                        menuItem.setIcon(R.drawable.instagram_new_post_filled_24);
                         fragment = new ComposeFragment();
                         break;
                     case R.id.action_profile:
-                        // do something here
+                        menuItem.setIcon(R.drawable.instagram_user_filled_24);
                         fragment = new ProfileFragment();
                         break;
                     default:
@@ -83,7 +69,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private static void unfill(@NonNull MenuItem menuItem, int lastPage) {
+        if (lastPage != 0) {
+            // There was a previous page selected
+            switch (lastPage) {
+                // Unfill the last page
+                // Go to the fragment they selected and fill in icon
+                case R.id.action_settings:
+                    break;
+                case R.id.action_home:
+                    menuItem.setIcon(R.drawable.instagram_home_outline_24);
+                    break;
+                case R.id.action_compose:
+                    menuItem.setIcon(R.drawable.instagram_new_post_outline_24);
+                    break;
+                case R.id.action_profile:
+                    menuItem.setIcon(R.drawable.instagram_user_outline_24);
+                    break;
+                default:
+                    break;
+            }
 
-
-
+        }
+    }
 }
