@@ -62,7 +62,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     // Serialize the tweet using parceler
                     intent.putExtra("username", post.getUser().getUsername());
                     intent.putExtra("description", post.getDescription());
-                    intent.putExtra("createdAt", post.getCreatedAt());
+                    intent.putExtra("createdAt", post.getCreatedAt().toString());
                     intent.putExtra("image", post.getImage().getUrl());
                     //context.startActivity(intent);
                     context.startActivity(intent);

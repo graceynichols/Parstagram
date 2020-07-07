@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -16,6 +17,7 @@ import org.parceler.Parcels;
 
 public class PostDetailsActivity extends AppCompatActivity {
 
+    private static final String TAG = "PostDetailsActivity";
     private static ActivityPostDetailsBinding binding;
     final FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -27,7 +29,8 @@ public class PostDetailsActivity extends AppCompatActivity {
         setContentView(view);
 
         Intent intent = getIntent();
-        binding.tvCreatedAt.setText(intent.getStringExtra("createdAt"));
+        Log.i(TAG,  "" + intent.getStringExtra("createdAt"));
+        binding.tvCreatedAt.setText("" + intent.getStringExtra("createdAt"));
         binding.tvDescription.setText(intent.getStringExtra("description"));
         binding.tvUsername.setText(intent.getStringExtra("username"));
         Glide.with(this).load(intent.getStringExtra("image")).into(binding.imageView);
