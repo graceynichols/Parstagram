@@ -18,6 +18,7 @@ import com.example.parstagram.activity.PostDetailsActivity;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 
+import org.parceler.Parcel;
 import org.parceler.Parcels;
 
 import java.text.SimpleDateFormat;
@@ -74,21 +75,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     // Launch DetailsActivity
                     Intent intent = new Intent(context, PostDetailsActivity.class);
                     // Packaged the data for the detail view activity to use
-                    intent.putExtra("username", post.getUser().getUsername());
-                    intent.putExtra("description", post.getDescription());
-                    intent.putExtra("createdAt", tvTime.getText());
-                    if (post.getImage() != null) {
-                        intent.putExtra("image", post.getImage().getUrl());
-                    } else {
-                        intent.putExtra("image", "");
-                    }
-                    ParseFile pic = post.getProfilePic();
-                    if (pic != null) {
-                        intent.putExtra("profilePic", pic.getUrl());
-                    } else {
-                        // No profile pic
-                        intent.putExtra("profilePic", "");
-                    }
+                    intent.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
                     context.startActivity(intent);
                 }
             });

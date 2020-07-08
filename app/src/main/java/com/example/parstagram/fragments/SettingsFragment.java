@@ -80,6 +80,7 @@ public class SettingsFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
+                // Switch to the profile pic fragment
                 Fragment fragment = new ProfilePicFragment();
                 getFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
             }

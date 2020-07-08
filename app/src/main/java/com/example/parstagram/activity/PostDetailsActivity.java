@@ -12,16 +12,20 @@ import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.example.parstagram.Post;
+import com.example.parstagram.PostsAdapter;
 import com.example.parstagram.R;
 import com.example.parstagram.databinding.ActivityPostDetailsBinding;
 import com.parse.ParseFile;
 
 import org.parceler.Parcels;
 
+import java.io.File;
+
 public class PostDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "PostDetailsActivity";
     private static ActivityPostDetailsBinding binding;
+    private Post post;
     //final FragmentManager fragmentManager = getSupportFragmentManager();
 
     @Override
@@ -39,19 +43,33 @@ public class PostDetailsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.actionbar);
 
-        Intent intent = getIntent();
-        Log.i(TAG,  "" + intent.getStringExtra("createdAt"));
-        binding.tvCreatedAt.setText(intent.getStringExtra("createdAt"));
-        binding.tvDescription.setText(intent.getStringExtra("description"));
-        binding.tvUsername.setText(intent.getStringExtra("username"));
-        String image = intent.getStringExtra("image");
-        if (!(image.equals(""))) {
-            Glide.with(this).load(image).into(binding.imageView);
+        post = Parcels.unwrap(getIntent().getParcelableExtra(Post.class.getSimpleName()));
+
+        // Set all text information
+        binding.tvCreatedAt.setText(PostsAdapter.getRelativeTimeAgo(post.getCreatedAt()));
+        binding.tvDescription.setText(post.getDescription());
+        binding.tvUsername.setText(post.getUser().getUsername());
+        String likeCount = "" + post.getLikes();
+        binding.tvLikes.setText(likeCount);
+
+        // Set post image and prof pic, if they exist
+        ParseFile image = post.getImage();
+        if (image != null) {
+            Glide.with(this).load(image.getUrl()).into(binding.imageView);
         }
-        String profPic = intent.getStringExtra("profilePic");
-        if (!(profPic.equals(""))) {
-            Glide.with(this).load(profPic).circleCrop().into(binding.ivProfilePic);
+        ParseFile profPic = post.getProfilePic();
+        if (profPic != null) {
+            Glide.with(this).load(profPic.getUrl()).circleCrop().into(binding.ivProfilePic);
         }
+
+        // Clicking like button fills heart and adds to likes
+        binding.btnLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Fill in heart icon
+                binding.btnLike.setImageResource(R.drawable.ufi_heart_active);
+            }
+        });
         //MainActivity.initializeBottomNavigationView(binding.bottomNavigation, getSupportFragmentManager());
 
     }
