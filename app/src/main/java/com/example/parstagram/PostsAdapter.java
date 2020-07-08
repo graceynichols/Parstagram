@@ -72,19 +72,20 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             }
 
             // Set on click listener for tweet detail view
-            itemView.setOnClickListener(new View.OnClickListener() {
+            if (fragment != null) {
+                itemView.setOnClickListener(new View.OnClickListener() {
 
-                @Override
-                public void onClick(View view) {
-                    Log.i(TAG, "Image thumbnail clicked");
-                    // Launch DetailsActivity
-                    Intent intent = new Intent(context, PostDetailsActivity.class);
-                    // Packaged the data for the detail view activity to use
-                    intent.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
-                    ((PostsFragment) fragment).startActivityForResult(intent, 1);
-                }
-            });
-
+                    @Override
+                    public void onClick(View view) {
+                        Log.i(TAG, "Image thumbnail clicked");
+                        // Launch DetailsActivity
+                        Intent intent = new Intent(context, PostDetailsActivity.class);
+                        // Packaged the data for the detail view activity to use
+                        intent.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
+                        ((PostsFragment) fragment).startActivityForResult(intent, 1);
+                    }
+                });
+            }
         }
     }
 

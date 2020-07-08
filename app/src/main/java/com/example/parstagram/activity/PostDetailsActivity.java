@@ -1,6 +1,7 @@
 package com.example.parstagram.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.annotation.SuppressLint;
@@ -18,6 +19,7 @@ import com.example.parstagram.PostsAdapter;
 import com.example.parstagram.R;
 import com.example.parstagram.databinding.ActivityPostDetailsBinding;
 import com.example.parstagram.fragments.PostsFragment;
+import com.example.parstagram.fragments.UserProfileFragment;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -124,6 +126,19 @@ public class PostDetailsActivity extends AppCompatActivity {
                 });
             }
         });
+
+        // Go to profile page action
+        View.OnClickListener onClickL = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), UserProfileActivity.class);
+                i.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
+                startActivity(i);
+            }
+        };
+        // User can tap username or profile to go to that profile page
+        binding.tvUsername.setOnClickListener(onClickL);
+        binding.ivProfilePic.setOnClickListener(onClickL);
         //MainActivity.initializeBottomNavigationView(binding.bottomNavigation, getSupportFragmentManager());
 
     }
