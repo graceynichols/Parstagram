@@ -27,6 +27,8 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
+
 import java.io.File;
 
 import static android.app.Activity.RESULT_OK;
@@ -143,6 +145,7 @@ public class ComposeFragment extends Fragment {
     private void savePost(String description, ParseUser currentUser, File photoFile) {
         Post post = new Post();
         post.setDescription(description);
+        post.setUsersWhoLiked(new JSONArray());
         post.setImage(new ParseFile(photoFile));
         post.setUser(currentUser);
         post.saveInBackground(new SaveCallback() {

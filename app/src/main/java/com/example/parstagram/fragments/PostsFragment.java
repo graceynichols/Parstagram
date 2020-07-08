@@ -1,7 +1,9 @@
 package com.example.parstagram.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,9 +22,13 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 
 public class PostsFragment extends Fragment {
@@ -54,7 +60,7 @@ public class PostsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         rvPosts = view.findViewById(R.id.rvPosts);
         allPosts = new ArrayList<>();
-        adapter = new PostsAdapter(getContext(), allPosts);
+        adapter = new PostsAdapter(this, allPosts);
 
         rvPosts.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -154,5 +160,25 @@ public class PostsFragment extends Fragment {
         adapter.clear();
         queryPosts();
         swipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Log.i(TAG, "Returned to timeline from details view");
+        if (resultCode == RESULT_OK) {
+            Post post = Parcels.unwrap(data.getParcelableExtra(Post.class.getSimpleName()));
+            int index = -1;
+            for (int i = 0; i < allPosts.size(); i++) {
+                if(allPosts.get(i).getObjectId().equals(post.getObjectId())) {
+                    // We need to update this post
+                    index = i;
+                }
+            }
+            if (index != -1) {
+                allPosts.remove(index);
+                allPosts.add(index, post);
+                adapter.notifyItemChanged(index);
+            }
+        }
     }
 }

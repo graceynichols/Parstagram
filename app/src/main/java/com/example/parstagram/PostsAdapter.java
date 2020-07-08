@@ -11,10 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.parstagram.activity.PostDetailsActivity;
+import com.example.parstagram.fragments.PostsFragment;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 
@@ -30,10 +33,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     private static final String TAG = "PostsAdapter";
     private Context context;
+    private Fragment fragment;
     private List<Post> posts;
 
-    public PostsAdapter(Context context, List<Post> posts) {
-        this.context = context;
+    public PostsAdapter(Fragment fragment, List<Post> posts) {
+        this.fragment = fragment;
+        this.context = fragment.getContext();
         this.posts = posts;
     }
 
@@ -76,12 +81,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     Intent intent = new Intent(context, PostDetailsActivity.class);
                     // Packaged the data for the detail view activity to use
                     intent.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
-                    context.startActivity(intent);
+                    ((PostsFragment) fragment).startActivityForResult(intent, 1);
                 }
             });
 
         }
     }
+
 
     @NonNull
     @Override

@@ -5,6 +5,8 @@ import com.parse.ParseObject;
 import com.parse.ParseClassName;
 import com.parse.ParseUser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.parceler.Parcel;
 
 @Parcel(analyze = {Post.class})
@@ -16,6 +18,7 @@ public class Post extends ParseObject {
     public static final String KEY_USER = "user";
     public static final String KEY_CREATED_KEY = "createdAt";
     public static final String KEY_LIKES = "likes";
+    public static final String KEY_USERS_WHO_LIKED = "usersWhoLiked";
 
     public Post() {
         super();
@@ -33,6 +36,31 @@ public class Post extends ParseObject {
         return getParseFile(KEY_IMAGE);
     }
 
+    public JSONArray getUsersWhoLiked() {return getJSONArray(KEY_USERS_WHO_LIKED); }
+
+    public int isLiked(ParseUser user) throws JSONException {
+        // Returns index of user if they liked the post, -1 if they haven't
+        JSONArray array = getJSONArray(KEY_USERS_WHO_LIKED);
+        for (int i = 0; i < array.length(); i++) {
+            if (array.get(i).equals(user.getObjectId())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void setUsersWhoLiked(JSONArray array) {put(KEY_USERS_WHO_LIKED, array); }
+
+    public void addUserToLikes(ParseUser user) {
+        setUsersWhoLiked(getJSONArray(KEY_USERS_WHO_LIKED).put(user.getObjectId()));
+    }
+
+    public void removeUserFromLikes(int index) {
+        JSONArray array = getJSONArray(KEY_USERS_WHO_LIKED);
+        array.remove(index);
+        setUsersWhoLiked(array);
+    }
+
     public void setImage(ParseFile parseFile) {
         put(KEY_IMAGE, parseFile);
     }
@@ -48,5 +76,9 @@ public class Post extends ParseObject {
     }
 
     public int getLikes() { return getInt(KEY_LIKES); }
+
+    public void addLike() { put(KEY_LIKES, getLikes() + 1); }
+
+    public void subLike() { put(KEY_LIKES, getLikes() - 1); }
 
 }
