@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 public class SettingsFragment extends Fragment {
     private static final String TAG = "SettingsFragment";
     private Button btnLogout;
+    private Button btnSetPic;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -44,6 +46,7 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         btnLogout = view.findViewById(R.id.btnLogout);
+        btnSetPic = view.findViewById(R.id.btnSetPic);
         // Create logout button
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +55,18 @@ public class SettingsFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         // Do something here
-                        goLogout(getContext());
+                        ParseUser.logOut();
+                        ParseUser currentUser = ParseUser.getCurrentUser();
+                        if (currentUser != null) {
+                            Log.i(TAG, "Error logging out");
+                            Toast.makeText(getContext(), "Logout failed", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.i(TAG, "Logout successful");
+                            Toast.makeText(getContext(), "Logout successful", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getContext(), LoginActivity.class);
+                            startActivity(intent);
+                            getActivity().finish();
+                        }
                     }
                 };
                 // Make the snackbar
@@ -62,21 +76,15 @@ public class SettingsFragment extends Fragment {
 
             }
         });
+        btnSetPic.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new ProfilePicFragment();
+                getFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
+            }
+        });
 
 
-    }
-
-    private static void goLogout(Context context) {
-        ParseUser.logOut();
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null) {
-            Log.i(TAG, "Error logging out");
-            Toast.makeText(context, "Logout failed", Toast.LENGTH_SHORT).show();
-        } else {
-            Log.i(TAG, "Logout successful");
-            Toast.makeText(context, "Logout successful", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(context, LoginActivity.class);
-            context.startActivity(intent);
-        }
     }
 }

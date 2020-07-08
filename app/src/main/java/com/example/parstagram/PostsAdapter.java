@@ -41,6 +41,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private ImageView ivImage;
         private TextView tvDescription;
         private TextView tvTime;
+        private ImageView ivProfilePic;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -48,6 +49,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             ivImage = itemView.findViewById(R.id.ivImage);
             tvDescription = itemView.findViewById(R.id.tvDescription);
             tvTime = itemView.findViewById(R.id.tvTime);
+            ivProfilePic = itemView.findViewById(R.id.ivProfilePic);
         }
 
         public void bind(final Post post) {
@@ -56,7 +58,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             tvTime.setText(getRelativeTimeAgo(post.getCreatedAt()));
             ParseFile image = post.getImage();
             if (image != null) {
-                Glide.with(context).load(post.getImage().getUrl()).into(ivImage);
+                Glide.with(context).load(image.getUrl()).into(ivImage);
+            }
+            ParseFile profPic = post.getProfilePic();
+            if (profPic != null) {
+                Glide.with(context).load(profPic.getUrl()).circleCrop().into(ivProfilePic);
             }
 
             // Set on click listener for tweet detail view
@@ -67,12 +73,22 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     Log.i(TAG, "Image thumbnail clicked");
                     // Launch DetailsActivity
                     Intent intent = new Intent(context, PostDetailsActivity.class);
-                    // Serialize the tweet using parceler
+                    // Packaged the data for the detail view activity to use
                     intent.putExtra("username", post.getUser().getUsername());
                     intent.putExtra("description", post.getDescription());
                     intent.putExtra("createdAt", tvTime.getText());
-                    intent.putExtra("image", post.getImage().getUrl());
-                    //context.startActivity(intent);
+                    if (post.getImage() != null) {
+                        intent.putExtra("image", post.getImage().getUrl());
+                    } else {
+                        intent.putExtra("image", "");
+                    }
+                    ParseFile pic = post.getProfilePic();
+                    if (pic != null) {
+                        intent.putExtra("profilePic", pic.getUrl());
+                    } else {
+                        // No profile pic
+                        intent.putExtra("profilePic", "");
+                    }
                     context.startActivity(intent);
                 }
             });

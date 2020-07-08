@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.example.parstagram.Post;
 import com.example.parstagram.R;
 import com.example.parstagram.databinding.ActivityPostDetailsBinding;
+import com.parse.ParseFile;
 
 import org.parceler.Parcels;
 
@@ -30,6 +31,7 @@ public class PostDetailsActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
+
         // Put instagram photo on the actionbar
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         this.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.white)));
@@ -39,11 +41,18 @@ public class PostDetailsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Log.i(TAG,  "" + intent.getStringExtra("createdAt"));
-        binding.tvCreatedAt.setText("" + intent.getStringExtra("createdAt"));
+        binding.tvCreatedAt.setText(intent.getStringExtra("createdAt"));
         binding.tvDescription.setText(intent.getStringExtra("description"));
         binding.tvUsername.setText(intent.getStringExtra("username"));
-        Glide.with(this).load(intent.getStringExtra("image")).into(binding.imageView);
-        //MainActivity.initializeBottomNavigationView(binding.bottomNavigation, fragmentManager);
+        String image = intent.getStringExtra("image");
+        if (!(image.equals(""))) {
+            Glide.with(this).load(image).into(binding.imageView);
+        }
+        String profPic = intent.getStringExtra("profilePic");
+        if (!(profPic.equals(""))) {
+            Glide.with(this).load(profPic).circleCrop().into(binding.ivProfilePic);
+        }
+        //MainActivity.initializeBottomNavigationView(binding.bottomNavigation, getSupportFragmentManager());
 
     }
 }
