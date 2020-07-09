@@ -15,4 +15,6 @@
     <string name="compose">Compose</string>
     <string name="home">Home</string>
     <string name="screenname">Screenname</string>
+    <string name="your_comment_here">Your comment here...</string>
+    <string name="comment">Comment</string>
 </resources>

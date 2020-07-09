@@ -19,6 +19,7 @@ public class Post extends ParseObject {
     public static final String KEY_CREATED_KEY = "createdAt";
     public static final String KEY_LIKES = "likes";
     public static final String KEY_USERS_WHO_LIKED = "usersWhoLiked";
+    public static final String KEY_COMMENTS = "comments";
 
     public Post() {
         super();
@@ -36,6 +37,32 @@ public class Post extends ParseObject {
         return getParseFile(KEY_IMAGE);
     }
 
+    public void setImage(ParseFile parseFile) {
+        put(KEY_IMAGE, parseFile);
+    }
+
+    public ParseUser getUser() {
+        return getParseUser(KEY_USER);
+    }
+
+    public ParseFile getProfilePic() {return getParseUser(KEY_USER).getParseFile("profilePic"); }
+
+    public void setUser(ParseUser user) {
+        put(KEY_USER, user);
+    }
+
+    public JSONArray getComments() { return getJSONArray(KEY_COMMENTS); }
+
+    public void setComments(JSONArray array) { put(KEY_COMMENTS, array); }
+
+    // Add a comment to the comment array and return the resulting array
+    public JSONArray addComment(String comment) throws JSONException {
+        JSONArray array = getComments().put(0, comment);
+        setComments(array);
+        return array;
+    }
+
+    // Functions related to liking
     public JSONArray getUsersWhoLiked() {return getJSONArray(KEY_USERS_WHO_LIKED); }
 
     public int isLiked(ParseUser user) throws JSONException {
@@ -61,20 +88,6 @@ public class Post extends ParseObject {
         JSONArray array = getJSONArray(KEY_USERS_WHO_LIKED);
         array.remove(index);
         setUsersWhoLiked(array);
-    }
-
-    public void setImage(ParseFile parseFile) {
-        put(KEY_IMAGE, parseFile);
-    }
-
-    public ParseUser getUser() {
-        return getParseUser(KEY_USER);
-    }
-
-    public ParseFile getProfilePic() {return getParseUser(KEY_USER).getParseFile("profilePic"); }
-
-    public void setUser(ParseUser user) {
-        put(KEY_USER, user);
     }
 
     public int getLikes() { return getInt(KEY_LIKES); }

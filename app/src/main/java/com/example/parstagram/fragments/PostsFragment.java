@@ -62,13 +62,15 @@ public class PostsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         rvPosts = view.findViewById(R.id.rvPosts);
         pb = view.findViewById(R.id.pbLoading);
+
+        // Recyclerview setup
         allPosts = new ArrayList<>();
         adapter = new PostsAdapter(this, allPosts);
-
         rvPosts.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvPosts.setLayoutManager(layoutManager);
 
+        // Setup scrollListener for endless scrolling
         scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {

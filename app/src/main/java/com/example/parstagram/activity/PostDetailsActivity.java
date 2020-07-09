@@ -1,6 +1,9 @@
 package com.example.parstagram.activity;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -9,10 +12,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.parstagram.CommentsAdapter;
 import com.example.parstagram.Post;
 import com.example.parstagram.PostsAdapter;
 import com.example.parstagram.R;
@@ -22,8 +28,12 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.parceler.Parcels;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PostDetailsActivity extends AppCompatActivity {
 
@@ -32,7 +42,9 @@ public class PostDetailsActivity extends AppCompatActivity {
     private Post post;
     private int index;
     private ParseUser user;
-    //final FragmentManager fragmentManager = getSupportFragmentManager();
+    private CommentsAdapter adapter;
+    private List<String> comments;
+    private static int REQUEST_CODE = 20;
 
     // TODO figure this out
     @SuppressLint("WrongConstant")
@@ -42,7 +54,6 @@ public class PostDetailsActivity extends AppCompatActivity {
         binding = ActivityPostDetailsBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-
 
         // Put instagram photo on the actionbar
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -122,6 +133,29 @@ public class PostDetailsActivity extends AppCompatActivity {
             }
         });
 
+        // Set up comment section
+        comments = new ArrayList<>();
+        adapter = new CommentsAdapter(this, comments);
+        binding.rvComments.setAdapter(adapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        binding.rvComments.setLayoutManager(layoutManager);
+        try {
+            getComments();
+        } catch (JSONException e) {
+            Log.i(TAG, "Error fetching comments");
+            e.printStackTrace();
+        }
+
+        // Setup add a comment button
+        binding.btnComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Start compose activity so user can write their comment
+                Intent intent = new Intent(getApplicationContext(), ComposeCommentActivity.class);
+                startActivityForResult(intent, REQUEST_CODE);
+            }
+        });
+
         // Go to profile page action
         View.OnClickListener onClickL = new View.OnClickListener() {
             @Override
@@ -145,5 +179,42 @@ public class PostDetailsActivity extends AppCompatActivity {
         i.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
         setResult(RESULT_OK, i);
         finish();
+    }
+
+    private void getComments() throws JSONException {
+        // Get comments from parse and put in recyclerview
+        JSONArray array = post.getComments();
+        Log.i(TAG, array.toString());
+        for (int i = 0; i < array.length(); i++) {
+            comments.add((String) array.get(i));
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            // Get data from the intent (tweet)
+            final String comm = data.getStringExtra("comment");
+            // Add this comment to the post in Parse
+            final ParseUser user = ParseUser.getCurrentUser();
+            final String userAndComm = user.getUsername() + ": " + comm;
+            try {
+                post.addComment(userAndComm);
+                post.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        Log.i(TAG, "Comment saved successfully");
+                        // Modify data source of comments
+                        comments.add(0, userAndComm);
+                        adapter.notifyItemInserted(0);
+                    }
+                });
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.i(TAG, "Error posting comment");
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
