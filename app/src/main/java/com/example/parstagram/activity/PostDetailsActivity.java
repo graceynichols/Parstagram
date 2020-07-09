@@ -195,6 +195,7 @@ public class PostDetailsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             // Get data from the intent (tweet)
+            binding.pbLoading.setVisibility(View.VISIBLE);
             final String comm = data.getStringExtra("comment");
             // Add this comment to the post in Parse
             final ParseUser user = ParseUser.getCurrentUser();
@@ -208,6 +209,7 @@ public class PostDetailsActivity extends AppCompatActivity {
                         // Modify data source of comments
                         comments.add(0, userAndComm);
                         adapter.notifyItemInserted(0);
+                        binding.pbLoading.setVisibility(View.INVISIBLE);
                     }
                 });
             } catch (JSONException e) {
