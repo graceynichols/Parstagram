@@ -1,8 +1,6 @@
 package com.example.parstagram.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -11,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -18,18 +17,13 @@ import com.example.parstagram.Post;
 import com.example.parstagram.PostsAdapter;
 import com.example.parstagram.R;
 import com.example.parstagram.databinding.ActivityPostDetailsBinding;
-import com.example.parstagram.fragments.PostsFragment;
-import com.example.parstagram.fragments.UserProfileFragment;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.parceler.Parcels;
-
-import java.io.File;
 
 public class PostDetailsActivity extends AppCompatActivity {
 
@@ -98,6 +92,7 @@ public class PostDetailsActivity extends AppCompatActivity {
         binding.btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                binding.pbLoading.setVisibility(ProgressBar.VISIBLE);
                 if (index == -1) {
                     // User has not liked the post
                     binding.btnLike.setImageResource(R.drawable.ufi_heart_active);
@@ -119,9 +114,9 @@ public class PostDetailsActivity extends AppCompatActivity {
                         if (e != null) {
                             Log.e(TAG, "Error while liking", e);
                             Toast.makeText(getApplicationContext(), "Error while liking", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Like saved!", Toast.LENGTH_SHORT).show();
                         }
+                        binding.pbLoading.setVisibility(ProgressBar.INVISIBLE);
+
                     }
                 });
             }

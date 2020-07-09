@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.parstagram.Post;
@@ -42,6 +43,7 @@ public class ComposeFragment extends Fragment {
     private ImageView ivPostImage;
     private Button btnSubmit;
     private File photoFile;
+    private ProgressBar pb;
 
     public ComposeFragment() {}
     // The onCreateView method is called when Fragment should create its View object hierarchy,
@@ -61,6 +63,7 @@ public class ComposeFragment extends Fragment {
         btnCaptureImage = view.findViewById(R.id.btnCaptureImage);
         ivPostImage = view.findViewById(R.id.ivPostImage);
         btnSubmit = view.findViewById(R.id.btnSubmit);
+        pb = view.findViewById(R.id.pbLoading);
 
         btnCaptureImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +76,10 @@ public class ComposeFragment extends Fragment {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                // Start progress bar
+                pb.setVisibility(ProgressBar.VISIBLE);
+
                 String description = etDescription.getText().toString();
                 if (description.isEmpty()) {
                     Toast.makeText(getContext(), "Description cannot be empty", Toast.LENGTH_SHORT).show();
@@ -148,6 +155,8 @@ public class ComposeFragment extends Fragment {
         post.setUsersWhoLiked(new JSONArray());
         post.setImage(new ParseFile(photoFile));
         post.setUser(currentUser);
+
+        // run a background job and once complete
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -156,6 +165,8 @@ public class ComposeFragment extends Fragment {
                     Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
                 }
                 Log.i(TAG, "Post save was successful!");
+                // Hide progress bar
+                pb.setVisibility(ProgressBar.INVISIBLE);
                 etDescription.setText("");
                 ivPostImage.setImageResource(0);
             }

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.parstagram.EndlessRecyclerViewScrollListener;
 import com.example.parstagram.Post;
@@ -39,6 +40,7 @@ public class PostsFragment extends Fragment {
     private RecyclerView rvPosts;
     protected PostsAdapter adapter;
     protected List<Post> allPosts;
+    private ProgressBar pb;
 
 
     public PostsFragment() {
@@ -59,6 +61,7 @@ public class PostsFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvPosts = view.findViewById(R.id.rvPosts);
+        pb = view.findViewById(R.id.pbLoading);
         allPosts = new ArrayList<>();
         adapter = new PostsAdapter(this, allPosts);
 
@@ -72,7 +75,9 @@ public class PostsFragment extends Fragment {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
                 if (allPosts.size() >= POST_LIMIT) {
+                    pb.setVisibility(ProgressBar.VISIBLE);
                     loadNextDataFromApi(page);
+                    pb.setVisibility(ProgressBar.INVISIBLE);
                 }
             }
         };
@@ -87,7 +92,9 @@ public class PostsFragment extends Fragment {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
+                pb.setVisibility(ProgressBar.VISIBLE);
                 fetchTimelineAsync(0);
+                pb.setVisibility(ProgressBar.INVISIBLE);
             }
         });
         // Configure the refreshing colors
@@ -130,6 +137,7 @@ public class PostsFragment extends Fragment {
     }
 
     protected void queryPosts() {
+        pb.setVisibility(ProgressBar.VISIBLE);
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
 
         query.include(Post.KEY_USER);
@@ -148,6 +156,7 @@ public class PostsFragment extends Fragment {
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
                 scrollListener.resetState();
+                pb.setVisibility(ProgressBar.INVISIBLE);
                 Log.i(TAG, "Query posts finished");
             }
         });

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.parstagram.Post;
@@ -39,6 +40,7 @@ public class ProfilePicFragment extends Fragment {
     private ImageView ivPostImage;
     private Button btnMakeProfPic;
     private File photoFile;
+    private ProgressBar pb;
 
     public ProfilePicFragment() {}
     // The onCreateView method is called when Fragment should create its View object hierarchy,
@@ -57,6 +59,7 @@ public class ProfilePicFragment extends Fragment {
         btnCaptureImage = view.findViewById(R.id.btnCaptureImage);
         ivPostImage = view.findViewById(R.id.ivPostImage);
         btnMakeProfPic = view.findViewById(R.id.btnMakeProfPic);
+        pb = view.findViewById(R.id.pbLoading);
 
         btnCaptureImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +74,9 @@ public class ProfilePicFragment extends Fragment {
                     Toast.makeText(getContext(), "There is no image!", Toast.LENGTH_SHORT).show();
                 }
                 ParseUser currentUser = ParseUser.getCurrentUser();
+                pb.setVisibility(ProgressBar.VISIBLE);
                 setProfilePic(photoFile, currentUser);
+                pb.setVisibility(ProgressBar.INVISIBLE);
 
             }
         });

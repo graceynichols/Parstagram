@@ -1,8 +1,10 @@
 package com.example.parstagram.fragments;
 
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import com.example.parstagram.Post;
+import com.example.parstagram.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -12,9 +14,12 @@ import java.util.List;
 
 public class ProfileFragment extends PostsFragment {
     private static final String TAG = "ProfileFragment";
+    private ProgressBar pb;
 
     @Override
     protected void queryPosts() {
+        pb = getView().findViewById(R.id.pbLoading);
+        pb.setVisibility(ProgressBar.VISIBLE);
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
         query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
@@ -32,6 +37,7 @@ public class ProfileFragment extends PostsFragment {
                 }
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
+                pb.setVisibility(ProgressBar.INVISIBLE);
                 Log.i(TAG, "Query posts finished");
             }
         });

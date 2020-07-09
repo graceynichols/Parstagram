@@ -9,6 +9,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -38,6 +39,7 @@ public class UserProfileActivity extends AppCompatActivity {
     protected List<Post> allPosts;
     private ImageView profilePic;
     private TextView tvUsername;
+    private ProgressBar pb;
 
     public UserProfileActivity() {
         // Required empty public constructor
@@ -51,6 +53,7 @@ public class UserProfileActivity extends AppCompatActivity {
         rvPosts = findViewById(R.id.rvPosts);
         tvUsername = findViewById(R.id.tvUsername);
         profilePic = findViewById(R.id.profilePic);
+        pb = findViewById(R.id.pbLoading);
         allPosts = new ArrayList<>();
         adapter = new PostsAdapterGrid(this, allPosts);
 
@@ -70,6 +73,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     protected void queryPosts() {
+        pb.setVisibility(ProgressBar.VISIBLE);
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
         query.whereEqualTo(Post.KEY_USER, user);
@@ -87,6 +91,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
+                pb.setVisibility(ProgressBar.INVISIBLE);
                 Log.i(TAG, "Query posts finished");
             }
         });
