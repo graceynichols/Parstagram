@@ -51,8 +51,10 @@ public class Post extends ParseObject {
 
     public void setUsersWhoLiked(JSONArray array) {put(KEY_USERS_WHO_LIKED, array); }
 
-    public void addUserToLikes(ParseUser user) {
+    public int addUserToLikes(ParseUser user) {
         setUsersWhoLiked(getJSONArray(KEY_USERS_WHO_LIKED).put(user.getObjectId()));
+        // Return index of user in likes array
+        return getJSONArray(KEY_USERS_WHO_LIKED).length() - 1;
     }
 
     public void removeUserFromLikes(int index) {

@@ -88,7 +88,7 @@ public class PostDetailsActivity extends AppCompatActivity {
         }
         Log.i(TAG, "USERS who liked " + post.getUsersWhoLiked().toString());
 
-        // Clicking like button fills heart and adds to likes
+        // Like or unlike post
         binding.btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,15 +96,15 @@ public class PostDetailsActivity extends AppCompatActivity {
                 if (index == -1) {
                     // User has not liked the post
                     binding.btnLike.setImageResource(R.drawable.ufi_heart_active);
-                    post.addUserToLikes(ParseUser.getCurrentUser());
+                    index = post.addUserToLikes(ParseUser.getCurrentUser());
                     post.addLike();
 
                 } else {
-                    // Unlike the post
-                    // User has not liked the post
+                    // User has liked the post -> unlike the post
                     binding.btnLike.setImageResource(R.drawable.ufi_heart);
                     post.removeUserFromLikes(index);
                     post.subLike();
+                    index = -1;
                 }
                 String likeCount = "" + post.getLikes();
                 binding.tvLikes.setText(likeCount);
@@ -131,15 +131,15 @@ public class PostDetailsActivity extends AppCompatActivity {
                 startActivity(i);
             }
         };
+
         // User can tap username or profile to go to that profile page
         binding.tvUsername.setOnClickListener(onClickL);
         binding.ivProfilePic.setOnClickListener(onClickL);
-        //MainActivity.initializeBottomNavigationView(binding.bottomNavigation, getSupportFragmentManager());
-
     }
 
     @Override
     public void onBackPressed() {
+        // Necessary for "saving" like information when people go back to posts screen
         Log.i(TAG, "Onbackpressed");
         Intent i = new Intent();
         i.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
