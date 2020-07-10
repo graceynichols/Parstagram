@@ -1,11 +1,15 @@
 package com.example.parstagram.fragments;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
@@ -19,31 +23,55 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codepath.asynchttpclient.AsyncHttpClient;
+import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.parstagram.Post;
 import com.example.parstagram.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+
+import com.google.android.gms.maps.SupportMapFragment;
+import okhttp3.Headers;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
-
 import static android.app.Activity.RESULT_OK;
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
+
+@RuntimePermissions
 public class ComposeFragment extends Fragment {
     public static final String TAG = "ComposeFragment";
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 40;
     private String photoFileName = "photo.jpg";
     private EditText etDescription;
     private Button btnCaptureImage;
+    private Button btnAddress;
+    private TextView tvAddress;
     private ImageView ivPostImage;
     private Button btnSubmit;
     private File photoFile;
     private ProgressBar pb;
+    private ComposeFragment fragment;
+    private String FIND_PLACE_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=";
+    Location mCurrentLocation;
+    public static JSONObject location;
+    private String address;
+    private final static String KEY_LOCATION = "location";
 
     public ComposeFragment() {}
     // The onCreateView method is called when Fragment should create its View object hierarchy,
@@ -64,6 +92,29 @@ public class ComposeFragment extends Fragment {
         ivPostImage = view.findViewById(R.id.ivPostImage);
         btnSubmit = view.findViewById(R.id.btnSubmit);
         pb = view.findViewById(R.id.pbLoading);
+        btnAddress = view.findViewById(R.id.btnAddress);
+        tvAddress = view.findViewById(R.id.tvAddress);
+        fragment = this;
+
+        // Click to add GeoTag
+        btnAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Get permissions and find location
+                ComposeFragmentPermissionsDispatcher.getMyLocationWithPermissionCheck(fragment);
+            }
+        });
+
+
+        /*
+        try {
+            getAddress(location);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.i(TAG, "Error getting current location");
+            Toast.makeText(getContext(), "Error getting current location", Toast.LENGTH_SHORT).show();
+        }*/
 
         btnCaptureImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,6 +204,7 @@ public class ComposeFragment extends Fragment {
         post.setDescription(description);
         post.setUsersWhoLiked(new JSONArray());
         post.setImage(new ParseFile(photoFile));
+        post.setLocation(address);
         post.setUser(currentUser);
 
         // run a background job and once complete
@@ -167,8 +219,73 @@ public class ComposeFragment extends Fragment {
                 // Hide progress bar
                 pb.setVisibility(ProgressBar.INVISIBLE);
                 etDescription.setText("");
+                tvAddress.setText("");
                 ivPostImage.setImageResource(0);
             }
         });
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        ComposeFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+    @SuppressWarnings({"MissingPermission"})
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
+    public void getMyLocation() {
+        // Access users current location
+        FusedLocationProviderClient locationClient = getFusedLocationProviderClient(getContext());
+        locationClient.getLastLocation()
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            Log.i(TAG, "Location: " + location.toString());
+                            getLocationFromCoords(location.getLatitude(), location.getLongitude());
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Error trying to get last GPS location");
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+
+    private void getLocationFromCoords(double x, double y) {
+        AsyncHttpClient client = new AsyncHttpClient();
+        String geoUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + x + "," + y + "&key=" + getString(R.string.google_maps_key);
+        Log.i(TAG, geoUrl);
+        client.get(geoUrl, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                Log.i(TAG, getString(R.string.google_maps_key));
+                Log.i(TAG, "Response" + " " + json.toString());
+                location = json.jsonObject;
+                try {
+                    address = ((JSONObject) location.getJSONArray("results").get(0)).getString("formatted_address");
+                    Log.i(TAG, address);
+                    tvAddress.setText(address);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+
+            }
+        });
+    }
+
 }

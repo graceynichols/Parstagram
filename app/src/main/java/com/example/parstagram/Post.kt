@@ -17,6 +17,12 @@ class Post : ParseObject() {
             put(KEY_DESCRIPTION, description!!)
         }
 
+    var location: String?
+        get() = getString(KEY_LOCATION)
+        set(location) {
+            put(KEY_LOCATION, location!!)
+        }
+
     var image: ParseFile?
         get() = getParseFile(KEY_IMAGE)
         set(parseFile) {
@@ -96,5 +102,6 @@ class Post : ParseObject() {
         const val KEY_LIKES = "likes"
         const val KEY_USERS_WHO_LIKED = "usersWhoLiked"
         const val KEY_COMMENTS = "comments"
+        const val KEY_LOCATION = "location"
     }
 }

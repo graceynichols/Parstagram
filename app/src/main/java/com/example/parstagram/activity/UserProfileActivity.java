@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -15,6 +16,8 @@ import com.bumptech.glide.Glide;
 import com.example.parstagram.Post;
 import com.example.parstagram.Adapters.PostsAdapterGrid;
 import com.example.parstagram.R;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.GoogleMap;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -30,12 +33,16 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private static ParseUser user;
     private static final String TAG = "UserProfileActivity";
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private RecyclerView rvPosts;
     protected PostsAdapterGrid adapter;
     protected List<Post> allPosts;
     private ImageView profilePic;
     private TextView tvUsername;
     private ProgressBar pb;
+    private GoogleMap map;
+    private LocationRequest mLocationRequest;
+    Location mCurrentLocation;
 
     public UserProfileActivity() {
         // Required empty public constructor
@@ -95,4 +102,6 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

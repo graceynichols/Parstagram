@@ -66,6 +66,11 @@ public class PostDetailsActivity extends AppCompatActivity {
         binding.tvUsername.setText(post.getUser().getUsername());
         String likeCount = "" + post.getLikes();
         binding.tvLikes.setText(likeCount);
+        String addy = post.getLocation();
+        if (addy != null) {
+            // There is a geotag
+            binding.tvAddress.setText(addy);
+        }
 
         if (post.getUsersWhoLiked() == null) {
             post.setUsersWhoLiked(new JSONArray());
