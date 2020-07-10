@@ -122,6 +122,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     // Sign up didn't succeed. Look at the ParseException
                     // to figure out what went wrong
+                    pb.setVisibility(ProgressBar.INVISIBLE);
                     if (e.getCode() == ParseException.USERNAME_TAKEN) {
                         Toast.makeText(getApplicationContext(), "Username already taken", Toast.LENGTH_SHORT).show();
                     } else {
