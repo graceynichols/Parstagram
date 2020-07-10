@@ -3,7 +3,6 @@ package com.example.parstagram.activity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -12,15 +11,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.parstagram.CommentsAdapter;
+import com.example.parstagram.Adapters.CommentsAdapter;
 import com.example.parstagram.Post;
-import com.example.parstagram.PostsAdapter;
+import com.example.parstagram.Adapters.PostsAdapter;
 import com.example.parstagram.R;
 import com.example.parstagram.databinding.ActivityPostDetailsBinding;
 import com.parse.ParseException;
@@ -46,7 +43,6 @@ public class PostDetailsActivity extends AppCompatActivity {
     private List<String> comments;
     private static int REQUEST_CODE = 20;
 
-    // TODO figure this out
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +79,6 @@ public class PostDetailsActivity extends AppCompatActivity {
             Log.i(TAG, "Error checking if liked");
             index = -1;
         }
-        Log.i(TAG, "Like index " + index);
         if (index == -1) {
             // Post is not liked
             binding.btnLike.setImageResource(R.drawable.ufi_heart);
@@ -130,7 +125,6 @@ public class PostDetailsActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Error while liking", Toast.LENGTH_SHORT).show();
                         }
                         binding.pbLoading.setVisibility(ProgressBar.INVISIBLE);
-
                     }
                 });
             }
@@ -201,8 +195,8 @@ public class PostDetailsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            // Get data from the intent (tweet)
             binding.pbLoading.setVisibility(View.VISIBLE);
+            // Get the comment from the compose activity
             final String comm = data.getStringExtra("comment");
             // Add this comment to the post in Parse
             final ParseUser user = ParseUser.getCurrentUser();

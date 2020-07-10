@@ -1,13 +1,9 @@
 package com.example.parstagram.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,14 +12,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.parstagram.PostsAdapter;
 import com.example.parstagram.R;
 import com.example.parstagram.activity.LoginActivity;
-import com.example.parstagram.activity.PostDetailsActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.ParseUser;
-
-import java.util.ArrayList;
 
 
 public class SettingsFragment extends Fragment {
@@ -54,7 +46,7 @@ public class SettingsFragment extends Fragment {
                 View.OnClickListener myOnClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Do something here
+                        // Logout user
                         ParseUser.logOut();
                         ParseUser currentUser = ParseUser.getCurrentUser();
                         if (currentUser != null) {
@@ -62,6 +54,7 @@ public class SettingsFragment extends Fragment {
                             Toast.makeText(getContext(), "Logout failed", Toast.LENGTH_SHORT).show();
                         } else {
                             Log.i(TAG, "Logout successful");
+                            // Take user back to login screen
                             Toast.makeText(getContext(), "Logout successful", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getContext(), LoginActivity.class);
                             startActivity(intent);
@@ -76,6 +69,7 @@ public class SettingsFragment extends Fragment {
 
             }
         });
+        // Change profile pic
         btnSetPic.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -85,7 +79,5 @@ public class SettingsFragment extends Fragment {
                 getFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
             }
         });
-
-
     }
 }

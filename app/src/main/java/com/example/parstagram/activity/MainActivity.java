@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     final FragmentManager fragmentManager = getSupportFragmentManager();
     private BottomNavigationView bottomNavigationView;
 
-
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,14 +34,12 @@ public class MainActivity extends AppCompatActivity {
         // Put instagram photo on the actionbar
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         this.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.white)));
-        //this.getSupportActionBar().set
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.actionbar);
 
-
+        // Setup bottom nav bar
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         initializeBottomNavigationView(bottomNavigationView, fragmentManager);
-
         bottomNavigationView.setSelectedItemId(R.id.action_home);
     }
 
@@ -50,11 +49,12 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 Fragment fragment;
                 if (lastPage != null) {
+                    // There was a previous page selected
                     unfill(lastPage);
                 }
                 lastPage = menuItem;
                 switch (menuItem.getItemId()) {
-                    // Unfill the last page
+                    // Unfill the last page's icon
                     // Go to the fragment they selected and fill in icon
                     case R.id.action_settings:
                         fragment = new SettingsFragment();
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static void unfill(@NonNull MenuItem menuItem) {
-        // There was a previous page selected
         switch (lastPage.getItemId()) {
             // Unfill the last page
             // Go to the fragment they selected and fill in icon

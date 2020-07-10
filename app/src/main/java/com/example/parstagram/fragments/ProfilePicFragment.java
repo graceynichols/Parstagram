@@ -67,6 +67,8 @@ public class ProfilePicFragment extends Fragment {
                 launchCamera();
             }
         });
+
+        // Saves profile pic
         btnMakeProfPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,27 +82,11 @@ public class ProfilePicFragment extends Fragment {
 
             }
         });
-        /*
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String description = etDescription.getText().toString();
-                if (description.isEmpty()) {
-                    Toast.makeText(getContext(), "Description cannot be empty", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (photoFile == null || ivPostImage.getDrawable() == null) {
-                    Toast.makeText(getContext(), "There is no image!", Toast.LENGTH_SHORT).show();
-                }
-                ParseUser currentUser = ParseUser.getCurrentUser();
-                savePost(description, currentUser, photoFile);
-            }
-        });*/
-
     }
 
     private void setProfilePic(File photoFile, ParseUser currentUser) {
         currentUser.put("profilePic", new ParseFile(photoFile));
+        // Save profile pic to parse
         currentUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -166,22 +152,5 @@ public class ProfilePicFragment extends Fragment {
         File file = new File(mediaStorageDir.getPath() + File.separator + fileName);
 
         return file;
-    }
-
-    private void savePost(String description, ParseUser currentUser, File photoFile) {
-        Post post = new Post();
-        post.setImage(new ParseFile(photoFile));
-        post.setUser(currentUser);
-        post.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, "Error while saving", e);
-                    Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
-                }
-                Log.i(TAG, "Post save was successful!");
-                ivPostImage.setImageResource(0);
-            }
-        });
     }
 }

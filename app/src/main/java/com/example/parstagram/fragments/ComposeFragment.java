@@ -72,11 +72,10 @@ public class ComposeFragment extends Fragment {
             }
         });
 
-        // queryPosts();
+        // Clicking submit saves profile pic
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 // Start progress bar
                 pb.setVisibility(ProgressBar.VISIBLE);
 

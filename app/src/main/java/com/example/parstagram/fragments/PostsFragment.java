@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -17,7 +18,7 @@ import android.widget.ProgressBar;
 
 import com.example.parstagram.EndlessRecyclerViewScrollListener;
 import com.example.parstagram.Post;
-import com.example.parstagram.PostsAdapter;
+import com.example.parstagram.Adapters.PostsAdapter;
 import com.example.parstagram.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -26,7 +27,6 @@ import com.parse.ParseQuery;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -70,6 +70,10 @@ public class PostsFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvPosts.setLayoutManager(layoutManager);
 
+        // Add lines between recycler view
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+        rvPosts.addItemDecoration(itemDecoration);
+
         // Setup scrollListener for endless scrolling
         scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
@@ -83,7 +87,7 @@ public class PostsFragment extends Fragment {
                 }
             }
         };
-        // Adds the scroll listener to RecyclerView
+        // Adds the scroll listener to RecyclerView (for endless scrolling)
         rvPosts.addOnScrollListener(scrollListener);
 
         swipeContainer = view.findViewById(R.id.swipeContainer);
@@ -91,9 +95,6 @@ public class PostsFragment extends Fragment {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
                 pb.setVisibility(ProgressBar.VISIBLE);
                 fetchTimelineAsync(0);
                 pb.setVisibility(ProgressBar.INVISIBLE);
@@ -110,15 +111,13 @@ public class PostsFragment extends Fragment {
 
     private void loadNextDataFromApi(int page) {
         // Send an API request to retrieve appropriate paginated data
-        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
-        //  --> Deserialize and construct new model objects from the API response
-        //  --> Append the new data objects to the existing set of items inside the array of items
-        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
         Log.i(TAG, "Loading next data");
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
         query.setLimit(POST_LIMIT);
         query.addDescendingOrder(Post.KEY_CREATED_KEY);
+        // Make sure to only get posts older than your oldest post
         query.whereLessThan(Post.KEY_CREATED_KEY, allPosts.get(POST_LIMIT * (page) - 1).getCreatedAt());
         query.findInBackground(new FindCallback<Post>() {
             @Override
@@ -130,6 +129,7 @@ public class PostsFragment extends Fragment {
                 for (Post post : posts) {
                     Log.i(TAG, "Post: " + post.getDescription() + " Username: " + post.getUser().getUsername());
                 }
+                // Add new data to recycler view
                 allPosts.addAll(posts);
                 Log.i(TAG, "" + allPosts.size());
                 adapter.notifyDataSetChanged();
@@ -142,6 +142,7 @@ public class PostsFragment extends Fragment {
         pb.setVisibility(ProgressBar.VISIBLE);
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
 
+        // Query the newest 20 posts from Parse
         query.include(Post.KEY_USER);
         query.setLimit(POST_LIMIT);
         query.addDescendingOrder(Post.KEY_CREATED_KEY);
@@ -155,6 +156,7 @@ public class PostsFragment extends Fragment {
                 for (Post post : posts) {
                     Log.i(TAG, "Post: " + post.getDescription() + " Username: " + post.getUser().getUsername());
                 }
+                // Add data to recyclerview
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
                 scrollListener.resetState();
@@ -175,6 +177,7 @@ public class PostsFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // Upon return from PostDetailsActivity, need to update changed post
         Log.i(TAG, "Returned to timeline from details view");
         if (resultCode == RESULT_OK) {
             Post post = Parcels.unwrap(data.getParcelableExtra(Post.class.getSimpleName()));

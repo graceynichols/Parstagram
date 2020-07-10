@@ -18,6 +18,7 @@ public class ProfileFragment extends PostsFragment {
 
     @Override
     protected void queryPosts() {
+        // Query posts by current user
         pb = getView().findViewById(R.id.pbLoading);
         pb.setVisibility(ProgressBar.VISIBLE);
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);

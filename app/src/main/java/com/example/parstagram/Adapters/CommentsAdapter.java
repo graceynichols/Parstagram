@@ -1,24 +1,16 @@
-package com.example.parstagram;
+package com.example.parstagram.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.example.parstagram.activity.PostDetailsActivity;
-import com.example.parstagram.fragments.PostsFragment;
-import com.parse.ParseFile;
-
-import org.parceler.Parcels;
+import com.example.parstagram.R;
 
 import java.util.List;
 

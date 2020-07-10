@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -13,10 +12,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.parstagram.EndlessRecyclerViewScrollListener;
 import com.example.parstagram.Post;
-import com.example.parstagram.PostsAdapter;
-import com.example.parstagram.PostsAdapterGrid;
+import com.example.parstagram.Adapters.PostsAdapterGrid;
 import com.example.parstagram.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -33,7 +30,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private static ParseUser user;
     private static final String TAG = "UserProfileActivity";
-    private static final int POST_LIMIT = 20;
     private RecyclerView rvPosts;
     protected PostsAdapterGrid adapter;
     protected List<Post> allPosts;
@@ -58,11 +54,13 @@ public class UserProfileActivity extends AppCompatActivity {
         adapter = new PostsAdapterGrid(this, allPosts);
 
         rvPosts.setAdapter(adapter);
+        // Use grid view instead of linear
         LinearLayoutManager layoutManager = new GridLayoutManager(this, 3);
         rvPosts.setLayoutManager(layoutManager);
         Post post =  Parcels.unwrap(getIntent().getParcelableExtra(Post.class.getSimpleName()));
         user = post.getUser();
 
+        // Put username and profile pic at the top of the page
         tvUsername.setText(user.getUsername());
         ParseFile profPic = user.getParseFile("profilePic");
         if (profPic != null) {
@@ -73,6 +71,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     protected void queryPosts() {
+        // Query posts by current user
         pb.setVisibility(ProgressBar.VISIBLE);
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
