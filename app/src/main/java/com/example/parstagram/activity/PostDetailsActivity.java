@@ -71,6 +71,9 @@ public class PostDetailsActivity extends AppCompatActivity {
         String likeCount = "" + post.getLikes();
         binding.tvLikes.setText(likeCount);
 
+        if (post.getUsersWhoLiked() == null) {
+            post.setUsersWhoLiked(new JSONArray());
+        }
         //Check if post is liked
         user = ParseUser.getCurrentUser();
         try {
@@ -184,6 +187,10 @@ public class PostDetailsActivity extends AppCompatActivity {
     private void getComments() throws JSONException {
         // Get comments from parse and put in recyclerview
         JSONArray array = post.getComments();
+        if (array == null) {
+            array = new JSONArray();
+            post.setComments(array);
+        }
         Log.i(TAG, array.toString());
         for (int i = 0; i < array.length(); i++) {
             comments.add((String) array.get(i));
